@@ -1,30 +1,39 @@
 let windowScroll = true;
 
-// toggle window scrolling
-function toggleScrollLock() {
-  if(windowScroll){
-    document.body.classList.add('locked');
-    document.body.style.overflow='hidden';
-    windowScroll = false;
-  } else {
-    document.body.classList.remove('locked');
-    document.body.style.removeProperty('overflow');
-    windowScroll = true;
-  }
+const preventDefault = (e) => {
+  e = e || window.event;
+  if (e.preventDefault)
+      e.preventDefault();
+  e.returnValue = false;
 }
 
-
-// implicitly lock window scroll
-function scrollLock(){
-  document.body.classList.add('locked');
-  document.body.style.overflow='hidden';
+// lock window scrolling
+const scrollLock = () => {
+  if (window.addEventListener) {
+    window.addEventListener('DOMMouseScroll', preventDefault, false);
+  }
+  window.onwheel = preventDefault; // modern standard
+  window.onmousewheel = document.onmousewheel = preventDefault; // older browsers, IE
+  window.ontouchmove  = preventDefault; // mobile
   windowScroll = false;
 }
 
-
-// implicitly unlock window scroll
-function scrollUnlock(){
-  document.body.classList.remove('locked');
-  document.body.style.removeProperty('overflow');
+// unlock window scrolling
+const scrollUnlock = () => {
+  if (window.removeEventListener) {
+    window.removeEventListener('DOMMouseScroll', preventDefault, false);
+  }
+  window.onmousewheel = document.onmousewheel = null;
+  window.onwheel = null;
+  window.ontouchmove = null;
   windowScroll = true;
+}
+
+// toggle window scrolling
+const toggleScrollLock = () => {
+  if(windowScroll) {
+    scrollLock();
+  } else {
+    scrollUnlock();
+  }
 }
